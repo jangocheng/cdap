@@ -16,6 +16,7 @@
 
 import ee from 'event-emitter';
 import 'whatwg-fetch';
+import { objectQuery } from 'services/helpers';
 import ifvisible from 'ifvisible.js';
 const WINDOW_ON_BLUR = 'WINDOW_BLUR_EVENT';
 const WINDOW_ON_FOCUS = 'WINDOW_FOCUS_EVENT';
@@ -24,7 +25,7 @@ class WindowManager {
   public eventemitter = ee(ee);
   private worker = null;
   private initWorker = () => {
-    if (window.CDAP_CONFIG.cdap.proxyBaseUrl) {
+    if (objectQuery(window, 'CDAP_CONFIG', 'cdap', 'proxyBaseUrl')) {
       this.worker = new Worker(`/cdap_assets/web-workers/Heartbeat-web-worker.js?q=${Date.now()}`);
       this.worker.onmessage = () => {
         this.reloadImage();
