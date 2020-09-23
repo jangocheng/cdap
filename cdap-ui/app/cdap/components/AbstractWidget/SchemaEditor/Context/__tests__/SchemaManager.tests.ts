@@ -55,7 +55,7 @@ describe('Unit tests for Schema Manager', () => {
       schema = SchemaManager().getInstance();
     });
 
-    it('Should work', () => {
+    it('Should initialize to a default empty schema', () => {
       expect(schema).not.toBeNull();
       const tree = schema.getSchemaTree();
       const list = schema.getFlatSchema();
@@ -97,14 +97,20 @@ describe('Unit tests for Schema Manager', () => {
     it('Should add a new record field', () => {
       const { fieldId } = getNthFieldIdInFlatSchema(schema, 1);
       schema.onChange(fieldId, { type: OperationTypesEnum.ADD });
-      expect(schema.getFlatSchema().length).toBe(3);
+      const flatSchema = schema.getFlatSchema();
+      const newField = flatSchema.find((field) => field.id === fieldId);
+      expect(flatSchema.length).toBe(3);
+      expect(newField).not.toBe(null);
     });
 
     it('Should remove a record field', () => {
       const { fieldId } = getNthFieldIdInFlatSchema(schema, 1);
       schema.onChange(fieldId, { type: OperationTypesEnum.ADD });
       schema.onChange(fieldId, { type: OperationTypesEnum.REMOVE });
-      expect(schema.getFlatSchema().length).toBe(2);
+      const flatSchema = schema.getFlatSchema();
+      const newField = flatSchema.find((field) => field.id === fieldId);
+      expect(flatSchema.length).toBe(2);
+      expect(newField).toBe(undefined);
     });
 
     it('Should change simple type to complex type', () => {
