@@ -69,6 +69,7 @@ interface IFieldRowProps extends WithStyles<typeof styles> {
   onChange: IRowOnChangeHandler;
   autoFocus?: boolean;
   disabled?: boolean;
+  dataCy?: string;
 }
 
 class FieldRowBase extends React.Component<IFieldRowProps, IFieldRowState> {
@@ -230,7 +231,7 @@ class FieldRowBase extends React.Component<IFieldRowProps, IFieldRowState> {
   };
 
   public render() {
-    const { classes } = this.props;
+    const { classes, dataCy } = this.props;
     const { ancestors, internalType } = this.props.field;
     if (internalType === InternalTypesEnum.SCHEMA) {
       return null;
@@ -245,6 +246,7 @@ class FieldRowBase extends React.Component<IFieldRowProps, IFieldRowState> {
               className={classnames({
                 [classes.erroredRow]: hasError,
               })}
+              dataCy={dataCy}
             >
               <React.Fragment>
                 <If condition={hasError}>
@@ -258,10 +260,16 @@ class FieldRowBase extends React.Component<IFieldRowProps, IFieldRowState> {
                 </If>
                 <If condition={typeof this.state.collapsed === 'boolean'} invisible>
                   <If condition={this.state.collapsed}>
-                    <KeyboardArrowRightIcon onClick={this.onToggleCollapse} />
+                    <KeyboardArrowRightIcon
+                      onClick={this.onToggleCollapse}
+                      data-cy="expand-button"
+                    />
                   </If>
                   <If condition={!this.state.collapsed}>
-                    <KeyboardArrowDownIcon onClick={this.onToggleCollapse} />
+                    <KeyboardArrowDownIcon
+                      onClick={this.onToggleCollapse}
+                      data-cy="collapse-button"
+                    />
                   </If>
                 </If>
                 {this.RenderSubType(this.props.field)}
