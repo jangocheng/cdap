@@ -24,6 +24,7 @@ import {
   AvroSchemaTypesEnum,
 } from 'components/AbstractWidget/SchemaEditor/SchemaConstants';
 import cloneDeep from 'lodash/cloneDeep';
+import { objectQuery } from 'services/helpers';
 
 const displayTypes: Array<ISimpleType | IComplexTypeNames | ILogicalTypeNames> = [
   AvroSchemaTypesEnum.ARRAY,
@@ -177,6 +178,21 @@ const isFlatRowTypeComplex = (typeName: AvroSchemaTypesEnum) => {
   }
 };
 
+const isNoSchemaAvailable = (schema) => {
+  let avroSchema = schema;
+  if (avroSchema) {
+    avroSchema = avroSchema.schema;
+    if (typeof avroSchema === 'string') {
+      try {
+        avroSchema = JSON.parse(avroSchema);
+      } catch (e) {
+        return false;
+      }
+    }
+    return !objectQuery(avroSchema, 'fields', 'length');
+  }
+};
+
 export {
   isNullable,
   isUnion,
@@ -188,4 +204,5 @@ export {
   isFlatRowTypeComplex,
   isDisplayTypeLogical,
   isDisplayTypeComplex,
+  isNoSchemaAvailable,
 };
