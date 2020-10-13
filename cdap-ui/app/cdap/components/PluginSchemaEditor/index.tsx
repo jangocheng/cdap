@@ -196,8 +196,18 @@ class PluginSchemaEditorBase extends React.PureComponent<
       Object.values(this.props.actionsDropdownMap)
         .filter((value) => typeof value === 'string')
         .join('--');
-    const existingSchemas = this.props.schemas.map((s) => s.schema).join('__');
-    const newSchemas = schemas.map((s) => s.schema).join('__');
+    let existingSchemas;
+    if (typeof this.props.schemas === 'string') {
+      existingSchemas = this.props.schemas;
+    } else {
+      existingSchemas = this.props.schemas.map((s) => s.schema).join('__');
+    }
+    let newSchemas;
+    if (typeof schemas === 'string') {
+      newSchemas = schemas;
+    } else {
+      newSchemas = schemas.map((s) => s.schema).join('__');
+    }
 
     const didPropsChange =
       disabled !== this.props.disabled ||
@@ -238,16 +248,28 @@ class PluginSchemaEditorBase extends React.PureComponent<
   };
 
   public onSchemaExport = () => {
-    const schemasToExport = this.props.schemas.map((schema) => {
+    let schemasToExport;
+    if (typeof this.props.schemas === 'string') {
       try {
-        return {
-          name: schema.name,
-          schema: JSON.parse(schema.schema),
+        schemasToExport = {
+          name: 'etlSchemaBody',
+          schema: JSON.parse(this.props.schemas),
         };
       } catch (e) {
-        return schema;
+        schemasToExport = this.props.schemas;
       }
-    });
+    } else {
+      schemasToExport = this.props.schemas.map((schema) => {
+        try {
+          return {
+            name: schema.name,
+            schema: JSON.parse(schema.schema),
+          };
+        } catch (e) {
+          return schema;
+        }
+      });
+    }
     // // CDAP-17106 - Need to use generic DownloadFile function here from download-file
     const blob = new Blob([JSON.stringify(schemasToExport, null, 4)], {
       type: 'application/json',
